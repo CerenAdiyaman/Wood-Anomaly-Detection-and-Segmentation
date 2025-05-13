@@ -1,0 +1,20 @@
+import axios from 'axios';
+
+const API_URL = 'http://localhost:8000';
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
+
+export const uploadImages = async (files: File[]) => {
+  const formData = new FormData();
+  files.forEach(file => {
+    formData.append('files', file);
+  });
+
+  const { data } = await api.post('/predict', formData);
+  return data;
+}; 
