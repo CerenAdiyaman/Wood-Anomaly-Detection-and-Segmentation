@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ImageUpload from './components/ImageUpload';
+import ImageUploadWithModel from './components/ImageUploadWithModel';
 import ResultDisplay from './components/ResultDisplay';
 import { uploadImages } from './services/api';
 import { toast, ToastContainer } from 'react-toastify';
@@ -17,10 +17,10 @@ const App: React.FC = () => {
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const handleUpload = async (files: File[]) => {
+  const handleUpload = async (files: File[], modelName: string) => {
     try {
       setLoading(true);
-      const response = await uploadImages(files);
+      const response = await uploadImages(files, modelName);
       setResults(response);
       toast.success('Görsel analizi tamamlandı!');
     } catch (error) {
@@ -39,7 +39,7 @@ const App: React.FC = () => {
           Ahşap yüzeylerindeki anomalileri tespit etmek için görsel yükleyin
         </p>
         
-        <ImageUpload onUpload={handleUpload} isLoading={loading} />
+        <ImageUploadWithModel onUpload={handleUpload} isLoading={loading} />
         
         {loading && (
           <div className="mt-8 text-center">
