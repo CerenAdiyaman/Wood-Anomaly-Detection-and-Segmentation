@@ -43,10 +43,12 @@ const ResultDisplay: React.FC<ResultProps> = ({
         </div>
         <div className="mt-4 flex gap-4">
           <p className="text-sm font-bold text-gray-900">
-            <span className="font-extrabold">F1 Score:</span> {typeof f1Score === "number" ? f1Score.toFixed(3) : f1Score}
+            <span className="font-extrabold">F1 Score:</span> 
+            {/* {typeof f1Score === "number" ? f1Score.toFixed(3) : f1Score} */}
           </p>
           <p className="text-sm font-bold text-gray-900">
-            <span className="font-extrabold">IoU:</span> {typeof iou === "number" ? iou.toFixed(3) : iou}
+            <span className="font-extrabold">IoU:</span> 
+            {/* {typeof iou === "number" ? iou.toFixed(3) : iou} */}
           </p>
         </div>
       </div>
