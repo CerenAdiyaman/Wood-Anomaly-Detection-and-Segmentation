@@ -1,9 +1,9 @@
 // Responsive App.tsx with top navbar, centered text, model info
 import React, { useState } from 'react';
-import ImageUploadWithModel from './components/ImageUploadWithModel';
 import { uploadImages } from './services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ResultDisplay from './components/ResultDisplay';
 
 interface Result {
   filename: string;
@@ -102,6 +102,26 @@ const App: React.FC = () => {
           <span className="ml-4 text-gray-300">Processing...</span>
         </div>
       )}
+
+      {!loading && results.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 mb-20">
+          <h2 className="text-2xl font-bold text-center text-white mb-8">Analysis Results</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {results.map((result, index) => (
+              <ResultDisplay
+                key={index}
+                filename={result.filename}
+                originalImage={result.original}
+                mask={result.mask}
+                heatmap={result.heatmap}
+                f1Score={result.f1_score}
+                iou={result.iou}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
 
       {/* Model Info Section */}
       <section id="models" className="w-full max-w-4xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-lg text-left mb-20">
