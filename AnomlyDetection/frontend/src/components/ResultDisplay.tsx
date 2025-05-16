@@ -22,78 +22,76 @@ const ResultDisplay: React.FC<ResultProps> = ({
 
   return (
     <>
-      <div 
+      <div
         onClick={() => setIsOpen(true)}
-        className="border rounded-lg p-4 mb-4 cursor-pointer hover:shadow-lg transition-shadow"
+        className="bg-gray-800 hover:bg-gray-700 transition rounded-xl p-4 cursor-pointer shadow-md flex flex-col justify-between w-full"
       >
-        <h3 className="text-lg font-extrabold text-gray-900 mb-2">{filename}</h3>
-        <div className="grid grid-cols-3 gap-4">
+        <h3 className="text-md font-semibold text-white mb-4">{filename}</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <p className="text-sm font-bold mb-1 text-gray-800">Original</p>
-            <img src={originalImage || mask} alt="Original" className="w-full h-32 object-cover rounded" />
+            <p className="text-sm text-gray-300 mb-1">Original</p>
+            <img
+              src={originalImage || mask}
+              alt="Original"
+              className="w-full rounded border border-gray-700"
+            />
           </div>
           <div>
-            <p className="text-sm font-bold mb-1 text-gray-800">Anomaly Mask</p>
-            <img src={mask} alt="Mask" className="w-full h-32 object-cover rounded" />
+            <p className="text-sm text-gray-300 mb-1">Anomaly Mask</p>
+            <img
+              src={mask}
+              alt="Mask"
+              className="w-full rounded border border-gray-700"
+            />
           </div>
           <div>
-            <p className="text-sm font-bold mb-1 text-gray-800">Heatmap</p>
-            <img src={heatmap} alt="Heatmap" className="w-full h-32 object-cover rounded" />
+            <p className="text-sm text-gray-300 mb-1">Heatmap</p>
+            <img
+              src={heatmap}
+              alt="Heatmap"
+              className="w-full rounded border border-gray-700"
+            />
           </div>
         </div>
-        <div className="mt-4 flex gap-4">
-          <p className="text-sm font-bold text-gray-900">
-            <span className="font-extrabold">F1 Score:</span> 
-            {/* {typeof f1Score === "number" ? f1Score.toFixed(3) : f1Score} */}
-          </p>
-          <p className="text-sm font-bold text-gray-900">
-            <span className="font-extrabold">IoU:</span> 
-            {/* {typeof iou === "number" ? iou.toFixed(3) : iou} */}
-          </p>
+
+        <div className="text-sm text-gray-300">
+          <p><span className="font-semibold">F1 Score:</span> </p>
+          <p><span className="font-semibold">IoU:</span></p>
         </div>
       </div>
 
-      <Dialog
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        className="fixed inset-0 z-10 overflow-y-auto"
-      >
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="fixed inset-0 z-10 overflow-y-auto">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="fixed inset-0 bg-black opacity-30" />
-          <Dialog.Panel className="relative bg-white rounded-lg max-w-4xl w-full mx-4 p-6">
+          <div className="fixed inset-0 bg-black bg-opacity-60" />
+          <Dialog.Panel className="relative bg-gray-900 text-white rounded-xl max-w-5xl w-full mx-4 p-6 shadow-xl border border-gray-700">
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"
             >
               ✕
             </button>
-            
-            <Dialog.Title className="text-xl font-extrabold mb-4 text-gray-900">
-              {filename}
-            </Dialog.Title>
+
+            <Dialog.Title className="text-2xl font-bold mb-6">{filename}</Dialog.Title>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <p className="font-bold mb-2 text-gray-800">Original Image</p>
-                <img src={originalImage || mask} alt="Original" className="w-full rounded" />
+                <p className="text-sm text-gray-400 mb-2">Original Image</p>
+                <img src={originalImage || mask} alt="Original" className="rounded w-full border border-gray-700" />
               </div>
               <div>
-                <p className="font-bold mb-2 text-gray-800">Anomaly Mask</p>
-                <img src={mask} alt="Mask" className="w-full rounded" />
+                <p className="text-sm text-gray-400 mb-2">Anomaly Mask</p>
+                <img src={mask} alt="Mask" className="rounded w-full border border-gray-700" />
               </div>
               <div>
-                <p className="font-bold mb-2 text-gray-800">Heatmap</p>
-                <img src={heatmap} alt="Heatmap" className="w-full rounded" />
+                <p className="text-sm text-gray-400 mb-2">Heatmap</p>
+                <img src={heatmap} alt="Heatmap" className="rounded w-full border border-gray-700" />
               </div>
             </div>
 
-            <div className="mt-6 flex gap-8">
-              <p className="font-bold text-gray-900">
-                <span className="font-extrabold">F1 Score:</span> {typeof f1Score === "number" ? f1Score.toFixed(3) : f1Score}
-              </p>
-              <p className="font-bold text-gray-900">
-                <span className="font-extrabold">IoU:</span> {typeof iou === "number" ? iou.toFixed(3) : iou}
-              </p>
+            <div className="mt-6 text-gray-300 text-sm space-x-6">
+              <span><span className="font-semibold">F1 Score:</span></span>
+              <span><span className="font-semibold">IoU:</span></span>
             </div>
           </Dialog.Panel>
         </div>
@@ -102,4 +100,4 @@ const ResultDisplay: React.FC<ResultProps> = ({
   );
 };
 
-export default ResultDisplay; 
+export default ResultDisplay;

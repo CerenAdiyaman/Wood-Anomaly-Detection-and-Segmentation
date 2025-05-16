@@ -104,23 +104,23 @@ const App: React.FC = () => {
       )}
 
       {!loading && results.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 mb-20">
-          <h2 className="text-2xl font-bold text-center text-white mb-8">Analysis Results</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map((result, index) => (
-              <ResultDisplay
-                key={index}
-                filename={result.filename}
-                originalImage={result.original}
-                mask={result.mask}
-                heatmap={result.heatmap}
-                f1Score={result.f1_score}
-                iou={result.iou}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+  <section className="w-full max-w-4xl mx-auto px-6 mb-20">
+    <h2 className="text-2xl font-bold text-center text-white mb-8">Analysis Results</h2>
+    <div className="flex justify-center">
+      <div className="w-full">
+        <ResultDisplay
+          filename={results[0].filename}
+          originalImage={results[0].original}
+          mask={results[0].mask}
+          heatmap={results[0].heatmap}
+          f1Score={results[0].f1_score}
+          iou={results[0].iou}
+        />
+      </div>
+    </div>
+  </section>
+)}
+
 
 
       {/* Model Info Section */}
@@ -134,6 +134,31 @@ const App: React.FC = () => {
             : 'Please select a model above to view its technical details.'}
         </p>
       </section>
+
+      {/* About Us Section */}
+        <section
+          id="about"
+          className="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row items-center gap-10 text-white"
+        >
+          <img
+            src="/images/AbotUs.png"
+            alt="About Woody"
+            className="w-full md:w-1/2 max-w-md rounded-xl shadow-lg"
+          />
+          <div className="text-left space-y-4 max-w-xl">
+            <h2 className="text-3xl font-bold">🪵 About Us</h2>
+            <p>
+              We are <strong>Ceren Adıyaman</strong> and <strong>Gamze Dağ</strong>, two passionate third-year Computer Engineering students at Eskişehir Osmangazi University with a strong interest in AI and computer vision.
+            </p>
+            <p>
+              <strong>Woody</strong> is our Neural Network project—a smart anomaly detection system designed to identify and visualize defects on wood surfaces using deep learning. Rather than building everything from scratch, we took a practical approach by adapting pre-trained models to the <strong>wood category</strong> of the <strong>MVTec AD</strong> dataset, ensuring both speed and precision.
+            </p>
+            <p>
+              Woody delivers real-time detection results such as <strong>mask overlays</strong> and <strong>heatmaps</strong>, offering valuable insights for quality assurance teams in industrial settings. Our goal is to combine academic knowledge with real-world impact by making automated visual inspection more accessible, efficient, and accurate.
+            </p>
+          </div>
+        </section>
+
 
       {/* Footer */}
       <footer id="about" className="text-center py-12 text-gray-500 text-sm">
