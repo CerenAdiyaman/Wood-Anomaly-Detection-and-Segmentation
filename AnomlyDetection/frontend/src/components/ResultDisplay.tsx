@@ -4,6 +4,7 @@ import { Dialog } from '@headlessui/react';
 interface ResultProps {
   filename: string;
   originalImage: string;
+  processedImage: string; 
   mask: string;
   heatmap: string;
   f1Score: number;
@@ -13,6 +14,7 @@ interface ResultProps {
 const ResultDisplay: React.FC<ResultProps> = ({
   filename,
   originalImage,
+  processedImage,
   mask,
   heatmap,
   f1Score,
@@ -29,14 +31,10 @@ const ResultDisplay: React.FC<ResultProps> = ({
         <h3 className="text-md font-semibold text-white mb-4">{filename}</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <p className="text-sm text-gray-300 mb-1">Original</p>
-            <img
-              src={originalImage || mask}
-              alt="Original"
-              className="w-full rounded border border-gray-700"
-            />
-          </div>
+            <div>
+              <p className="text-sm text-gray-300 mb-1">Processed</p>
+              <img src={processedImage} alt="Processed" className="w-full rounded border border-gray-700" />
+            </div>
           <div>
             <p className="text-sm text-gray-300 mb-1">Anomaly Mask</p>
             <img
@@ -76,8 +74,8 @@ const ResultDisplay: React.FC<ResultProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <p className="text-sm text-gray-400 mb-2">Original Image</p>
-                <img src={originalImage || mask} alt="Original" className="rounded w-full border border-gray-700" />
+                <p className="text-sm text-gray-400 mb-2">Processed</p>
+                <img src={processedImage} alt="Processed" className="rounded w-full border border-gray-700" />
               </div>
               <div>
                 <p className="text-sm text-gray-400 mb-2">Anomaly Mask</p>

@@ -8,6 +8,7 @@ import ResultDisplay from './components/ResultDisplay';
 interface Result {
   filename: string;
   original: string;
+  processed: string;
   mask: string;
   heatmap: string;
   f1_score: number;
@@ -111,6 +112,7 @@ const App: React.FC = () => {
         <ResultDisplay
           filename={results[0].filename}
           originalImage={results[0].original}
+          processedImage={results[0].processed}
           mask={results[0].mask}
           heatmap={results[0].heatmap}
           f1Score={results[0].f1_score}

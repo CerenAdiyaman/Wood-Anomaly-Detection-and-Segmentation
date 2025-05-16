@@ -23,14 +23,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Eğitimdeki transform ile birebir aynı
 transform = transforms.Compose([
     transforms.Resize((256, 256)),
-    transforms.ToTensor()
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225])
 ])
-
-# Model yükleme (uygulama başlangıcında bir kere)
-model = None  # TODO: Model yükleme işlemi burada yapılacak
-
 
 def crop_and_clean(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -62,16 +61,14 @@ def enhance_contrast_clahe(image):
 
 def process_image(image):
     cropped_image = crop_and_clean(image)
-    # Eğer kontrast artırmak isterseniz aşağıdaki satırı açabilirsiniz:
-    # enhanced_image = enhance_contrast_clahe(cropped_image)
-    # final_image = resize_and_normalize(enhanced_image)
-    final_image = resize_and_normalize(cropped_image)
+    enhanced_image = enhance_contrast_clahe(cropped_image)
+    final_image = resize_and_normalize(enhanced_image)
     return final_image
 
 @app.post("/predict")
 async def predict_anomaly(
     files: List[UploadFile] = File(...),
-    modelName: str = Form(...)  # ✅ kullanıcıdan model seçimi alıyoruz
+    modelName: str = Form(...)
 ):
     try:
         model = load_model_by_name(modelName)
@@ -81,43 +78,49 @@ async def predict_anomaly(
     results = []
 
     for file in files:
-       contents = await file.read()
-    img_np = np.frombuffer(contents, np.uint8)
-    img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
+        contents = await file.read()
+        original_base64 = base64.b64encode(contents).decode('utf-8')
+        original_data_url = f"data:image/jpeg;base64,{original_base64}"
 
-    # --- Burada ön işleme fonksiyonlarını uygula ---
-    processed_img = process_image(img)
-    # Eğer modeliniz 0-1 aralığında float bekliyorsa, processed_img zaten uygun.
-    # Eğer modeliniz 0-255 aralığında uint8 bekliyorsa, processed_img = (processed_img * 255).astype(np.uint8) yapabilirsiniz.
+        img_np = np.frombuffer(contents, np.uint8)
+        img = cv2.imdecode(img_np, cv2.IMREAD_COLOR)
 
-    # Modelinize uygun şekilde tensor'a çevirin:
-    img_rgb = cv2.cvtColor((processed_img * 255).astype(np.uint8), cv2.COLOR_BGR2RGB)
-    pil_img = Image.fromarray(img_rgb)
-    tensor = transform(pil_img).unsqueeze(0)
-    # ----------------------------------------------
+        if img is None:
+            print(f"Skipped: {file.filename} could not be read.")
+            continue
 
-    with torch.no_grad():
-        anomaly_map = model(tensor)
-        anomaly_np = anomaly_map.squeeze().cpu().numpy()
+        processed = process_image(img)
+        processed_uint8 = (processed * 255).astype(np.uint8)
+        pil_img = Image.fromarray(cv2.cvtColor(processed_uint8, cv2.COLOR_BGR2RGB))
+        tensor = transform(pil_img).unsqueeze(0)
 
-        norm_map = (anomaly_np - anomaly_np.min()) / (anomaly_np.max() - anomaly_np.min() + 1e-8)
-        mask = (norm_map > 0.5).astype(np.uint8) * 255
-        heatmap = cv2.applyColorMap((norm_map * 255).astype(np.uint8), cv2.COLORMAP_JET)
+        with torch.no_grad():
+            anomaly_map = model(tensor)
+            anomaly_np = anomaly_map.squeeze().cpu().numpy()
 
-        _, mask_encoded = cv2.imencode('.png', mask)
-        mask_base64 = base64.b64encode(mask_encoded).decode('utf-8')
+            norm_map = (anomaly_np - anomaly_np.min()) / (anomaly_np.max() - anomaly_np.min() + 1e-8)
+            mask = (norm_map > 0.32).astype(np.uint8) * 255
+            heatmap = cv2.applyColorMap((norm_map * 255).astype(np.uint8), cv2.COLORMAP_JET)
 
-        _, heatmap_encoded = cv2.imencode('.png', heatmap)
-        heatmap_base64 = base64.b64encode(heatmap_encoded).decode('utf-8')
+            _, mask_encoded = cv2.imencode('.png', mask)
+            mask_base64 = base64.b64encode(mask_encoded).decode('utf-8')
 
-        results.append({
-            "filename": file.filename,
-            "model": modelName,
-            "f1_score": "-",  # ground truth yoksa hesaplanamaz
-            "iou": "-",
-            "mask": f"data:image/png;base64,{mask_base64}",
-            "heatmap": f"data:image/png;base64,{heatmap_base64}"
-        })
+            _, heatmap_encoded = cv2.imencode('.png', heatmap)
+            heatmap_base64 = base64.b64encode(heatmap_encoded).decode('utf-8')
+
+            _, processed_encoded = cv2.imencode('.png', processed_uint8)
+            processed_base64 = base64.b64encode(processed_encoded).decode('utf-8')
+
+            results.append({
+                "filename": file.filename,
+                "model": modelName,
+                "f1_score": "-",
+                "iou": "-",
+                "original": original_data_url,
+                "processed": f"data:image/png;base64,{processed_base64}",
+                "mask": f"data:image/png;base64,{mask_base64}",
+                "heatmap": f"data:image/png;base64,{heatmap_base64}"
+            })
 
     return results
 
@@ -126,4 +129,4 @@ async def root():
     return {"message": "Wood Anomaly Detection API is running"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True) 
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
