@@ -56,13 +56,13 @@ def enhance_contrast_clahe(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     equalized = clahe.apply(gray)
-    equalized_color = cv2.cvtColor(equalized, cv2.COLOR_GRAY2BGR)
+    equalized_color = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
     return equalized_color
 
 def process_image(image):
     cropped_image = crop_and_clean(image)
-    enhanced_image = enhance_contrast_clahe(cropped_image)
-    final_image = resize_and_normalize(enhanced_image)
+    # enhanced_image = enhance_contrast_clahe(cropped_image)
+    final_image = resize_and_normalize(cropped_image)
     return final_image
 
 @app.post("/predict")
@@ -129,4 +129,4 @@ async def root():
     return {"message": "Wood Anomaly Detection API is running"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
