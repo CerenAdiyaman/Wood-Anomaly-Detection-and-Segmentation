@@ -56,13 +56,13 @@ def enhance_contrast_clahe(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     equalized = clahe.apply(gray)
-    equalized_color = cv2.cvtColor(equalized, cv2.COLOR_GRAY2BGR)
+    equalized_color = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
     return equalized_color
 
 def process_image(image):
     cropped_image = crop_and_clean(image)
-    # enhanced_image = enhance_contrast_clahe(cropped_image)
-    final_image = resize_and_normalize(cropped_image)
+    enhanced_image = enhance_contrast_clahe(cropped_image)
+    final_image = resize_and_normalize(enhanced_image)
     return final_image
 
 @app.post("/predict")
@@ -99,6 +99,7 @@ async def predict_anomaly(
             anomaly_np = anomaly_map.squeeze().cpu().numpy()
 
             norm_map = (anomaly_np - anomaly_np.min()) / (anomaly_np.max() - anomaly_np.min() + 1e-8)
+            anomaly_score = float(norm_map.mean())
             mask = (norm_map > 0.32).astype(np.uint8) * 255
             heatmap = cv2.applyColorMap((norm_map * 255).astype(np.uint8), cv2.COLORMAP_JET)
 
@@ -117,7 +118,9 @@ async def predict_anomaly(
                 "original": original_data_url,
                 "processed": f"data:image/png;base64,{processed_base64}",
                 "mask": f"data:image/png;base64,{mask_base64}",
-                "heatmap": f"data:image/png;base64,{heatmap_base64}"
+                "heatmap": f"data:image/png;base64,{heatmap_base64}",
+                "anomaly_score": round(anomaly_score, 4),
+                "status": "Anomalous" if anomaly_score > 0.17 else "Normal"
             })
 
     return results
@@ -127,4 +130,4 @@ async def root():
     return {"message": "Wood Anomaly Detection API is running"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
