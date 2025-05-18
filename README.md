@@ -22,7 +22,41 @@ AnomlyDetection/
 │ └── Dockerfile.frontend # Frontend için Dockerfile
 ├── docker-compose.yml # Tüm sistemi ayağa kaldıran yapılandırma dosyası
 ```
+## 🚀 Projeyi Docker Olmadan Çalıştırma Adımları
 
+1. Sanal Ortam Oluşturma
+```
+python -m venv .venv
+```
+Windows:
+```
+.venv\Scripts\activate
+```
+macOS/Linux:
+```
+source .venv/bin/activate
+```
+
+3. Backend Gereksinimlerini Yükleme
+```
+pip install --upgrade pip
+pip install -r backend/requirements.txt
+```
+
+4. Backend Servisini Başlat
+```
+cd backend
+uvicorn app.main:app --reload
+```
+Backend artık şu adreste çalışır: http://127.0.0.1:8000
+
+5. Frontend Kurulumu ve Başlatma
+```
+cd ../frontend
+npm install
+npm start
+```
+Frontend şu adrese açılır: http://localhost:3000
 
 ## 🐳 Docker ile Çalıştırma
 
