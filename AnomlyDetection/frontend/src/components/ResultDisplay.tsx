@@ -17,8 +17,6 @@ const ResultDisplay: React.FC<ResultProps> = ({
   processedImage,
   mask,
   heatmap,
-  f1Score,
-  iou
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,10 +51,7 @@ const ResultDisplay: React.FC<ResultProps> = ({
           </div>
         </div>
 
-        <div className="text-sm text-gray-300">
-          <p><span className="font-semibold">F1 Score:</span> </p>
-          <p><span className="font-semibold">IoU:</span></p>
-        </div>
+      
       </div>
 
       <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="fixed inset-0 z-10 overflow-y-auto">
