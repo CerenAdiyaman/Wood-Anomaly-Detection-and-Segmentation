@@ -11,8 +11,8 @@ interface Result {
   processed: string;
   mask: string;
   heatmap: string;
-  f1_score: number;
-  iou: number;
+  anomalyScore: number;
+  status: 'Anomalous' | 'Normal';
 }
 
 const App: React.FC = () => {
@@ -21,18 +21,31 @@ const App: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<string>('EfficientAD');
 
   const handleUpload = async (files: File[], modelName: string) => {
-    try {
-      setLoading(true);
-      const response = await uploadImages(files, modelName);
-      setResults(response);
-      toast.success('Image analysis completed!');
-    } catch (error) {
-      console.error('Upload failed:', error);
-      toast.error('There was an error uploading the image.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const response = await uploadImages(files, modelName);
+
+    // snake_case → camelCase dönüşümü
+    const normalized = response.map((item: any) => ({
+      filename: item.filename,
+      original: item.original,
+      processed: item.processed,
+      mask: item.mask,
+      heatmap: item.heatmap,
+      anomalyScore: item.anomaly_score ?? 0,
+      status: item.status ?? "Normal",
+    }));
+
+    setResults(normalized);
+    toast.success("Image analysis completed!");
+  } catch (error) {
+    console.error("Upload failed:", error);
+    toast.error("There was an error uploading the image.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans">
@@ -57,6 +70,7 @@ const App: React.FC = () => {
           <p className="text-gray-300 text-base md:text-lg">
             This AI-driven web platform enables automated anomaly detection on wood surfaces by analyzing uploaded images through multiple deep learning models.
             It provides instant visual outputs including anomaly masks and heatmaps, helping in quality control, defect localization, and visual inspection processes in industrial applications.
+            TEST1
           </p>
         </div>
       </section>
@@ -65,7 +79,7 @@ const App: React.FC = () => {
       <section id="detect" className="w-full max-w-4xl mx-auto bg-gray-800 p-8 rounded-2xl shadow-lg text-center space-y-6 mb-20">
         <h2 className="text-xl font-semibold">Select Model</h2>
         <div className="flex flex-wrap justify-center gap-4">
-          {['EfficientAD', 'Model B', 'Model C', 'Model D', 'Model E', 'Model F'].map((model) => (
+          {['EfficientAD', 'DREAM', 'GLASS', 'FastFlow', 'Model ECFA', 'INP-Former'].map((model) => (
             <button
               key={model}
               className={`px-4 py-2 rounded-md transition ${selectedModel === model ? 'bg-indigo-600' : 'bg-gray-700 hover:bg-indigo-500'}`}
@@ -115,14 +129,13 @@ const App: React.FC = () => {
           processedImage={results[0].processed}
           mask={results[0].mask}
           heatmap={results[0].heatmap}
-          f1Score={results[0].f1_score}
-          iou={results[0].iou}
+          anomalyScore={results[0].anomalyScore}
+          status={results[0].status}
         />
       </div>
     </div>
   </section>
 )}
-
 
 
       {/* Model Info Section */}
