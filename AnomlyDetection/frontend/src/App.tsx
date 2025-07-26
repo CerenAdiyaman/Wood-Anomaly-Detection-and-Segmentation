@@ -70,6 +70,7 @@ const App: React.FC = () => {
           <p className="text-gray-300 text-base md:text-lg">
             This AI-driven web platform enables automated anomaly detection on wood surfaces by analyzing uploaded images through multiple deep learning models.
             It provides instant visual outputs including anomaly masks and heatmaps, helping in quality control, defect localization, and visual inspection processes in industrial applications.
+            TEST1
           </p>
         </div>
       </section>
